@@ -1,10 +1,8 @@
-
 import java.awt.*;
 import java.util.Random;
 import javax.swing.*;
 
 public class ArithmeticGameCalculator extends JFrame {
-    // mga components
     private JLabel leftNumLabel, operatorLabel, rightNumLabel, equalsLabel;
     private JTextField answerField;
     private JButton submitBtn, nextBtn;
@@ -13,21 +11,26 @@ public class ArithmeticGameCalculator extends JFrame {
     private JComboBox<String> difficultyCombo;
     private Random rand = new Random();
 
-    // game data
     private int leftNum, rightNum;
-    private char operator = '+'; // default
+    private char operator = '+';
     private int correct = 0, total = 0;
-    private boolean answered = false; // para malikayan double submit
+    private boolean answered = false;
 
     public ArithmeticGameCalculator() {
-        super("Arithmetic Game Calculator");
+        super("🎮 Arithmetic Game Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(540, 350);
+        setSize(620, 420);
         setLocationRelativeTo(null);
 
-        // TOP display (question area)
+        // MAIN PANEL (dark theme)
+        JPanel mainPanel = new JPanel(new BorderLayout(10,10));
+        mainPanel.setBackground(new Color(25, 25, 25));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        // QUESTION PANEL
         JPanel questionPanel = new JPanel(new GridBagLayout());
-        questionPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        questionPanel.setBackground(new Color(40, 40, 40));
+        questionPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Question", 0, 0, null, Color.WHITE));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5,5,5,5);
 
@@ -43,54 +46,71 @@ public class ArithmeticGameCalculator extends JFrame {
         gbc.gridx=3; questionPanel.add(equalsLabel,gbc);
         gbc.gridx=4; questionPanel.add(resultBox,gbc);
 
-        // INPUT area (answer + buttons)
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,8));
-        inputPanel.add(new JLabel("Answer:"));
-        answerField = new JTextField(8);
-        answerField.setFont(new Font("SansSerif", Font.PLAIN,18));
+        // INPUT PANEL
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,15,10));
+        inputPanel.setBackground(new Color(25,25,25));
+        JLabel ansLabel = new JLabel("Enter Answer:");
+        ansLabel.setForeground(Color.WHITE);
+        inputPanel.add(ansLabel);
+
+        answerField = new JTextField(10);
+        answerField.setFont(new Font("Arial", Font.PLAIN,16));
         inputPanel.add(answerField);
-        submitBtn = new JButton("Submit");
+
+        submitBtn = createButton("Submit", new Color(0, 180, 80));
+        nextBtn = createButton("Next", new Color(80, 120, 220));
         inputPanel.add(submitBtn);
-        nextBtn = new JButton("Next");
         inputPanel.add(nextBtn);
 
-        // OPERATOR buttons (para ikaw ang mopili)
+        // OPERATOR PANEL
         JPanel operatorPanel = new JPanel(new GridLayout(1,4,10,10));
-        operatorPanel.setBorder(BorderFactory.createTitledBorder("Choose Operator"));
-        JButton addBtn = new JButton("+");
-        JButton subBtn = new JButton("-");
-        JButton mulBtn = new JButton("×");
-        JButton divBtn = new JButton("÷");
+        operatorPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Choose Operator", 0, 0, null, Color.WHITE));
+        operatorPanel.setBackground(new Color(35,35,35));
+
+        JButton addBtn = createButton("+", new Color(255, 193, 7));
+        JButton subBtn = createButton("-", new Color(255, 87, 34));
+        JButton mulBtn = createButton("×", new Color(156, 39, 176));
+        JButton divBtn = createButton("÷", new Color(33, 150, 243));
+
         operatorPanel.add(addBtn);
         operatorPanel.add(subBtn);
         operatorPanel.add(mulBtn);
         operatorPanel.add(divBtn);
 
-        // DIFFICULTY combo box
-        JPanel diffPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        diffPanel.setBorder(BorderFactory.createTitledBorder("Difficulty"));
+        // DIFFICULTY PANEL
+        JPanel diffPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,5));
+        diffPanel.setBackground(new Color(35,35,35));
+        diffPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Difficulty", 0, 0, null, Color.WHITE));
+
         String[] diffs = {"Easy (1-10)", "Medium (1-50)", "Hard (1-200)"};
         difficultyCombo = new JComboBox<>(diffs);
+        difficultyCombo.setFont(new Font("Arial", Font.PLAIN,16));
         diffPanel.add(difficultyCombo);
 
-        // SCORE label
+        // SCORE PANEL
+        JPanel scorePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        scorePanel.setBackground(new Color(20,20,20));
+        scorePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Score", 0, 0, null, Color.WHITE));
+
         scoreLabel = new JLabel("Score: 0 / 0");
-        scoreLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        scoreLabel.setForeground(new Color(0, 230, 118));
+        scorePanel.add(scoreLabel);
 
-        // MAIN layout
-        Container cp = getContentPane();
-        cp.setLayout(new BorderLayout());
-        cp.add(questionPanel, BorderLayout.NORTH);
-        cp.add(inputPanel, BorderLayout.CENTER);
+        // LOWER PANEL COMBINATION
+        JPanel lowerPanel = new JPanel(new BorderLayout(10,10));
+        lowerPanel.setBackground(new Color(25,25,25));
+        lowerPanel.add(operatorPanel, BorderLayout.NORTH);
+        lowerPanel.add(diffPanel, BorderLayout.CENTER);
+        lowerPanel.add(scorePanel, BorderLayout.SOUTH);
 
-        JPanel lower = new JPanel(new BorderLayout());
-        lower.add(operatorPanel, BorderLayout.NORTH);
-        lower.add(diffPanel, BorderLayout.CENTER);
-        lower.add(scoreLabel, BorderLayout.SOUTH);
-        cp.add(lower, BorderLayout.SOUTH);
+        // ADD ALL TO MAIN
+        mainPanel.add(questionPanel, BorderLayout.NORTH);
+        mainPanel.add(inputPanel, BorderLayout.CENTER);
+        mainPanel.add(lowerPanel, BorderLayout.SOUTH);
+        add(mainPanel);
 
-        // --- ACTIONS ---
-        // kung mopili kag operator, automatic mag-generate ug question
+        // ACTIONS
         addBtn.addActionListener(e -> { operator = '+'; nextQuestion(); });
         subBtn.addActionListener(e -> { operator = '-'; nextQuestion(); });
         mulBtn.addActionListener(e -> { operator = '*'; nextQuestion(); });
@@ -99,12 +119,11 @@ public class ArithmeticGameCalculator extends JFrame {
         submitBtn.addActionListener(e -> checkAnswer());
         nextBtn.addActionListener(e -> nextQuestion());
         answerField.addActionListener(e -> checkAnswer());
+        difficultyCombo.addActionListener(e -> nextQuestion());
 
-        // sugdan ang game
         nextQuestion();
     }
 
-    // mag-generate ug bag-ong question
     private void nextQuestion() {
         int max = switch (difficultyCombo.getSelectedIndex()) {
             case 0 -> 10;
@@ -115,7 +134,6 @@ public class ArithmeticGameCalculator extends JFrame {
         leftNum = rand.nextInt(max) + 1;
         rightNum = rand.nextInt(max) + 1;
 
-        // para sa division, siguruhon nga divisible
         if (operator == '/') {
             rightNum = rand.nextInt(Math.max(1, max/4)) + 1;
             leftNum = rightNum * (rand.nextInt(Math.max(1, max/rightNum)) + 1);
@@ -125,15 +143,14 @@ public class ArithmeticGameCalculator extends JFrame {
         rightNumLabel.setText(String.valueOf(rightNum));
         operatorLabel.setText(String.valueOf(operator));
         resultBox.setText("?");
-        resultBox.setForeground(Color.BLACK);
+        resultBox.setForeground(Color.WHITE);
         answerField.setText("");
         answerField.requestFocusInWindow();
         answered = false;
     }
 
-    // check sa answer kung sakto ba
     private void checkAnswer() {
-        if (answered) return; // dili pwede i-double click
+        if (answered) return;
         String ans = answerField.getText().trim();
         if (ans.isEmpty()) return;
         answered = true;
@@ -153,10 +170,12 @@ public class ArithmeticGameCalculator extends JFrame {
             if (isCorrect) {
                 correct++;
                 resultBox.setText("✔");
-                resultBox.setForeground(new Color(0,130,0));
+                resultBox.setForeground(new Color(0,230,118));
+                showEmojiPopup("Correct! 😄", new Color(0, 200, 0));
             } else {
                 resultBox.setText(String.valueOf(correctAns));
-                resultBox.setForeground(Color.RED);
+                resultBox.setForeground(new Color(255,82,82));
+                showEmojiPopup("Wrong! 😢", new Color(200, 0, 0));
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Invalid number.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -166,22 +185,47 @@ public class ArithmeticGameCalculator extends JFrame {
         scoreLabel.setText("Score: " + correct + " / " + total);
     }
 
-    // helper function sa big display labels
+    // POP-UP emoji window (disappears after 1.5 sec)
+    private void showEmojiPopup(String message, Color bgColor) {
+        JDialog popup = new JDialog(this, false);
+        popup.setUndecorated(true);
+        popup.setSize(180, 100);
+        popup.getContentPane().setBackground(bgColor);
+        popup.setLocationRelativeTo(this);
+
+        JLabel label = new JLabel(message, SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 20));
+        label.setForeground(Color.WHITE);
+        popup.add(label);
+
+        popup.setVisible(true);
+
+        new Timer(1500, e -> popup.dispose()).start(); // hide after 1.5s
+    }
+
     private JLabel bigLabel(String t) {
         JLabel lbl = new JLabel(t, SwingConstants.CENTER);
         lbl.setPreferredSize(new Dimension(70,70));
         lbl.setOpaque(true);
-        lbl.setBackground(new Color(250,250,250));
-        lbl.setFont(new Font("SansSerif", Font.BOLD, 26));
-        lbl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY,2));
+        lbl.setBackground(new Color(45,45,45));
+        lbl.setFont(new Font("Arial", Font.BOLD, 28));
+        lbl.setForeground(Color.WHITE);
+        lbl.setBorder(BorderFactory.createLineBorder(new Color(100,100,100),2));
         return lbl;
+    }
+
+    private JButton createButton(String text, Color color) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Arial", Font.BOLD, 16));
+        btn.setBackground(color);
+        btn.setForeground(Color.BLACK);
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        return btn;
     }
 
     public static void main(String[] args) {
         try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch(Exception ignored){}
-        SwingUtilities.invokeLater(() -> {
-            new ArithmeticGameCalculator().setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new ArithmeticGameCalculator().setVisible(true));
     }
 }
-

@@ -1,9 +1,3 @@
-/*
-ArithmeticGameCalculator.java
-Java GUI arithmetic game + calculator
-Ikaw ang mopili sa operator sign (+ - × ÷)
-Naay submit ug next button, score ug difficulty level
-*/
 
 import java.awt.*;
 import java.util.Random;
@@ -190,3 +184,4 @@ public class ArithmeticGameCalculator extends JFrame {
         });
     }
 }
+
